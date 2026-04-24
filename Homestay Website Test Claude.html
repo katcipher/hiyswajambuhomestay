@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hiyswa Jambu Homestay</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-deep: #1b3a28;
+    --green-mid: #2d6a4f;
+    --green-light: #74b892;
+    --gold: #c9973a;
+    --gold-light: #e8c278;
+    --cream: #f8f2e8;
+    --cream-dark: #ede4d3;
+    --terra: #b5573a;
+    --white: #ffffff;
+    --text-dark: #1a2318;
+    --text-mid: #3d5244;
+    --shadow: rgba(27,58,40,0.18);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* ─── LOADER ─── */
+  #loader {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--green-deep);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    transition: opacity 0.7s ease, visibility 0.7s ease;
+  }
+  #loader.hide { opacity: 0; visibility: hidden; }
+  .loader-leaf {
+    width: 60px; height: 60px;
+    border: 3px solid rgba(201,151,58,0.3);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  .loader-title {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--gold-light);
+    font-size: 1.4rem;
+    letter-spacing: 3px;
+    margin-top: 20px;
+    opacity: 0.9;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ─── NAV ─── */
+  #navbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    padding: 0 5vw;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 72px;
+    transition: background 0.4s, box-shadow 0.4s, height 0.4s;
+  }
+  #navbar.scrolled {
+    background: rgba(27,58,40,0.97);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.25);
+    height: 60px;
+    backdrop-filter: blur(10px);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.55rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    line-height: 1.1;
+  }
+  .nav-logo span { font-size: 0.75rem; display: block; font-weight: 300; letter-spacing: 3px; color: rgba(232,194,120,0.7); text-transform: uppercase; }
+  .nav-links { display: flex; gap: 8px; align-items: center; list-style: none; }
+  .nav-links li a {
+    font-size: 0.83rem; font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    transition: all 0.25s;
+    position: relative;
+  }
+  .nav-links li a::after {
+    content: '';
+    position: absolute; bottom: 2px; left: 50%; right: 50%;
+    height: 2px; background: var(--gold);
+    transition: left 0.3s, right 0.3s;
+    border-radius: 2px;
+  }
+  .nav-links li a:hover { color: var(--gold-light); }
+  .nav-links li a:hover::after { left: 14px; right: 14px; }
+  .nav-links li a.active { color: var(--gold-light); }
+  .nav-links li a.active::after { left: 14px; right: 14px; }
+  .nav-book-btn {
+    background: var(--gold) !important;
+    color: var(--green-deep) !important;
+    padding: 8px 18px !important;
+    border-radius: 30px !important;
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
+    transition: all 0.3s !important;
+  }
+  .nav-book-btn:hover { background: var(--gold-light) !important; transform: translateY(-1px); box-shadow: 0 4px 15px rgba(201,151,58,0.5) !important; }
+  .nav-book-btn::after { display: none !important; }
+
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 5px;
+    background: none;
+    border: none;
+  }
+  .hamburger span {
+    display: block;
+    width: 26px; height: 2px;
+    background: var(--gold-light);
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* ─── PAGES ─── */
+  .page { display: none; opacity: 0; transition: opacity 0.5s ease; }
+  .page.active { display: block; opacity: 1; }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    background: var(--green-deep);
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(160deg, rgba(27,58,40,0.88) 0%, rgba(27,58,40,0.55) 50%, rgba(45,106,79,0.7) 100%),
+      radial-gradient(ellipse at 80% 50%, rgba(116,184,146,0.3) 0%, transparent 60%);
+    z-index: 1;
+  }
+  /* Tropical leaf decorations */
+  .hero-leaf {
+    position: absolute;
+    opacity: 0.06;
+    z-index: 1;
+  }
+  .hero-leaf svg { fill: var(--green-light); }
+  .hero-leaf-1 { top: -5%; right: -3%; width: 420px; transform: rotate(-20deg); animation: leafSway 8s ease-in-out infinite; }
+  .hero-leaf-2 { bottom: -8%; left: -4%; width: 380px; transform: rotate(30deg); animation: leafSway 10s ease-in-out infinite reverse; }
+  .hero-leaf-3 { top: 20%; left: 5%; width: 200px; transform: rotate(-40deg); opacity: 0.04; animation: leafSway 12s ease-in-out infinite 2s; }
+  @keyframes leafSway {
+    0%, 100% { transform: rotate(-20deg) scale(1); }
+    50% { transform: rotate(-17deg) scale(1.03); }
+  }
+  /* Stars/particles */
+  .hero-particles { position: absolute; inset: 0; z-index: 1; overflow: hidden; }
+  .particle {
+    position: absolute;
+    width: 3px; height: 3px;
+    background: var(--gold-light);
+    border-radius: 50%;
+    animation: twinkle var(--dur, 4s) ease-in-out infinite var(--del, 0s);
+    opacity: 0;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 0.7; transform: scale(1); }
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    text-align: center;
+    padding: 0 20px;
+    max-width: 900px;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(201,151,58,0.2);
+    border: 1px solid rgba(201,151,58,0.4);
+    color: var(--gold-light);
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    border-radius: 30px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.5s forwards;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 300;
+    color: var(--white);
+    line-height: 1.05;
+    letter-spacing: -1px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.8s forwards;
+  }
+  .hero-title .accent { color: var(--gold-light); font-style: italic; }
+  .hero-title .line2 { display: block; font-weight: 600; font-size: 0.78em; letter-spacing: 6px; text-transform: uppercase; font-style: normal; font-family: 'DM Sans', sans-serif; color: rgba(255,255,255,0.75); margin-top: 10px; }
+  .hero-tagline {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.72);
+    margin: 28px auto 40px;
+    max-width: 520px;
+    line-height: 1.8;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.1s forwards;
+  }
+  .hero-ctas {
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.4s forwards;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--green-deep);
+    padding: 15px 38px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: inline-block;
+    box-shadow: 0 4px 20px rgba(201,151,58,0.4);
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-3px); box-shadow: 0 8px 30px rgba(201,151,58,0.5); }
+  .btn-outline {
+    background: transparent;
+    color: var(--white);
+    padding: 15px 38px;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: 1.5px solid rgba(255,255,255,0.45);
+    text-decoration: none;
+    transition: all 0.3s;
+    display: inline-block;
+  }
+  .btn-outline:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.8); transform: translateY(-3px); }
+
+  .hero-scroll {
+    position: absolute; bottom: 36px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeIn 1s ease 2s forwards;
+  }
+  .hero-scroll span { font-size: 0.68rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse { 0%,100%{opacity:0.3;transform:scaleY(0.8)} 50%{opacity:1;transform:scaleY(1)} }
+
+  /* ─── STATS BAR ─── */
+  .stats-bar {
+    background: var(--green-deep);
+    padding: 28px 5vw;
+    display: flex;
+    justify-content: center;
+    gap: clamp(20px, 5vw, 80px);
+    flex-wrap: wrap;
+  }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    line-height: 1;
+  }
+  .stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.5); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+
+  /* ─── SECTION COMMONS ─── */
+  section { padding: 90px 5vw; }
+  .section-tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--green-mid);
+    font-weight: 600;
+    margin-bottom: 14px;
+    position: relative;
+    padding-left: 30px;
+  }
+  .section-tag::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 20px; height: 2px;
+    background: var(--gold);
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 400;
+    color: var(--green-deep);
+    line-height: 1.15;
+    margin-bottom: 18px;
+  }
+  .section-title em { font-style: italic; color: var(--green-mid); }
+  .section-body { font-size: 1rem; color: var(--text-mid); line-height: 1.85; max-width: 620px; }
+  .section-divider { width: 60px; height: 3px; background: linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius: 3px; margin: 18px 0; }
+
+  /* ─── ABOUT ─── */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .about-visual {
+    position: relative;
+    height: 520px;
+  }
+  .about-img-main {
+    position: absolute;
+    top: 0; left: 0;
+    width: 80%; height: 80%;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #2d6a4f 0%, #1b3a28 50%, #3a7d5e 100%);
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(27,58,40,0.3);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .about-img-main .photo-placeholder {
+    color: rgba(255,255,255,0.15);
+    font-family: 'Cormorant Garamond',serif;
+    font-size: 1rem;
+    text-align: center;
+    padding: 20px;
+  }
+  /* Replace .about-img-main background-image with actual photo */
+  .about-img-secondary {
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 55%; height: 55%;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #c9973a 0%, #8a5c1a 100%);
+    border: 5px solid var(--cream);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .about-badge-float {
+    position: absolute;
+    top: 40%; right: -20px;
+    background: var(--green-deep);
+    color: var(--gold-light);
+    padding: 18px 22px;
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(27,58,40,0.4);
+    z-index: 5;
+  }
+  .about-badge-float strong { display: block; font-family: 'Cormorant Garamond',serif; font-size: 2rem; line-height: 1; }
+  .about-badge-float span { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; }
+  .values-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
+  .value-chip {
+    background: var(--cream-dark);
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex; align-items: center; gap: 12px;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .value-chip:hover { transform: translateY(-3px); box-shadow: 0 8px 25px var(--shadow); }
+  .value-chip-icon { font-size: 1.5rem; }
+  .value-chip-text { font-size: 0.88rem; font-weight: 500; color: var(--green-deep); }
+
+  /* ─── FACILITIES ─── */
+  .facilities-section { background: var(--green-deep); padding-top: 90px; padding-bottom: 90px; }
+  .facilities-section .section-tag { color: var(--gold-light); }
+  .facilities-section .section-tag::before { background: var(--gold-light); }
+  .facilities-section .section-title { color: var(--white); }
+  .facilities-section .section-divider { background: linear-gradient(90deg,var(--gold-light),rgba(232,194,120,0.3)); }
+  .facilities-header { max-width: 1200px; margin: 0 auto 56px; }
+  .facilities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+    gap: 28px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .facility-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: transform 0.4s, box-shadow 0.4s, border-color 0.4s;
+    position: relative;
+    cursor: default;
+  }
+  .facility-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(201,151,58,0.4);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .facility-photo {
+    height: 220px;
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* Each facility gets a unique gradient — replace with real photos */
+  .fp-pool { background: linear-gradient(135deg, #0f4c75 0%, #1b7bc4 50%, #3ab5e6 100%); }
+  .fp-waterpark { background: linear-gradient(135deg, #00b4d8 0%, #0077b6 50%, #023e8a 100%); }
+  .fp-futsal { background: linear-gradient(135deg, #2d6a4f 0%, #52b788 50%, #95d5b2 100%); }
+  .fp-parking { background: linear-gradient(135deg, #4a4e69 0%, #6b7280 50%, #9ca3af 100%); }
+  .fp-bbq { background: linear-gradient(135deg, #7f5539 0%, #c9973a 50%, #e8c278 100%); }
+  .fp-bicycle { background: linear-gradient(135deg, #606c38 0%, #dda15e 50%, #fefae0 100%); }
+  .facility-photo-icon {
+    font-size: 4rem;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+    z-index: 1;
+    animation: iconFloat 4s ease-in-out infinite;
+  }
+  @keyframes iconFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .facility-photo-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);
+  }
+  /* Replace instruction tag */
+  .photo-replace-tag {
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(0,0,0,0.5);
+    color: rgba(255,255,255,0.5);
+    font-size: 0.6rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .facility-info { padding: 24px; }
+  .facility-name {
+    font-family: 'Cormorant Garamond',serif;
+    font-size: 1.5rem;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .facility-desc { font-size: 0.87rem; color: rgba(255,255,255,0.6); line-height: 1.7; }
+  .facility-tag {
+    display: inline-block;
+    margin-top: 14px;
+    background: rgba(201,151,58,0.15);
+    border: 1px solid rgba(201,151,58,0.3);
+    color: var(--gold-light);
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+  }
+
+  /* ─── VIDEO SECTION ─── */
+  .video-section {
+    background: var(--green-deep);
+    padding: 0 5vw 90px;
+  }
+  .video-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    cursor: pointer;
+    background: #000;
+  }
+  .video-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: linear-gradient(135deg, #0a2018 0%, #1b3a28 40%, #2d6a4f 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .video-thumb:hover { opacity: 0.9; }
+  .video-thumb-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 60% 40%, rgba(116,184,146,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 20% 70%, rgba(201,151,58,0.1) 0%, transparent 50%);
+  }
+  .video-drone-label {
+    position: absolute; top: 24px; left: 24px;
+    background: rgba(0,0,0,0.6);
+    color: var(--gold-light);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .drone-dot { width: 6px; height: 6px; background: #ff4444; border-radius: 50%; animation: blink 1.5s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+  .play-btn-outer {
+    width: 90px; height: 90px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2;
+    animation: pulsRing 2.5s ease-in-out infinite;
+  }
+  .play-btn-inner {
+    width: 68px; height: 68px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+    transition: transform 0.3s;
+  }
+  .video-wrapper:hover .play-btn-inner { transform: scale(1.08); }
+  @keyframes pulsRing {
+    0%,100%{box-shadow:0 0 0 0 rgba(201,151,58,0.4)}
+    50%{box-shadow:0 0 0 20px rgba(201,151,58,0)}
+  }
+  .video-caption {
+    position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+    text-align: center; z-index: 2;
+  }
+  .video-caption h3 {
+    font-family: 'Cormorant Garamond',serif;
+    font-size: 1.8rem; color: var(--white);
+    text-shadow: 0 2px 15px rgba(0,0,0,0.5);
+  }
+  .video-caption p { font-size: 0.82rem; color: rgba(255,255,255,0.55); margin-top: 6px; letter-spacing: 1px; }
+
+  /* Actual video embed */
+  .video-iframe-container { display: none; width: 100%; aspect-ratio: 16/9; position: relative; }
+  .video-iframe-container iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+
+  /* ─── ROOMS / PRICING ─── */
+  .rooms-section { background: var(--cream); }
+  .rooms-intro { max-width: 1200px; margin: 0 auto 56px; text-align: center; }
+  .rooms-intro .section-tag { margin: 0 auto 14px; display: block; }
+  .rooms-intro .section-divider { margin: 18px auto; }
+  .rooms-intro .section-body { margin: 0 auto; text-align: center; }
+  .pricing-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 28px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .pricing-card {
+    background: var(--white);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(27,58,40,0.08);
+    transition: transform 0.4s, box-shadow 0.4s;
+    position: relative;
+  }
+  .pricing-card:hover { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(27,58,40,0.18); }
+  .pricing-card.featured { border: 2px solid var(--gold); }
+  .pricing-card-badge {
+    position: absolute; top: 20px; right: 20px;
+    background: var(--gold);
+    color: var(--green-deep);
+    font-size: 0.68rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+  .pricing-card-photo {
+    height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3.5rem;
+    position: relative; overflow: hidden;
+  }
+  .pp-standard { background: linear-gradient(135deg, #d4e6d4 0%, #a8d5a2 100%); }
+  .pp-deluxe { background: linear-gradient(135deg, #d4c4e4 0%, #b8a0d0 100%); }
+  .pp-suite { background: linear-gradient(135deg, #e4d4b4 0%, #d0a060 100%); }
+  .pp-fullhouse { background: linear-gradient(135deg, #c4d4e4 0%, #7090b0 100%); }
+  .pricing-card-body { padding: 26px; }
+  .pricing-card-type { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 6px; }
+  .pricing-card-name {
+    font-family: 'Cormorant Garamond',serif;
+    font-size: 1.65rem;
+    color: var(--green-deep);
+    margin-bottom: 6px;
+  }
+  .pricing-card-desc { font-size: 0.86rem; color: #6b7280; line-height: 1.65; margin-bottom: 18px; }
+  .pricing-card-amenities { list-style: none; margin-bottom: 22px; display: flex; flex-direction: column; gap: 8px; }
+  .pricing-card-amenities li { font-size: 0.84rem; color: var(--text-mid); display: flex; align-items: center; gap: 8px; }
+  .pricing-card-amenities li::before { content: '✓'; color: var(--green-mid); font-weight: 700; }
+  .pricing-card-price { display: flex; align-items: baseline; gap: 5px; margin-bottom: 20px; }
+  .price-from { font-size: 0.78rem; color: #9ca3af; }
+  .price-amount {
+    font-family: 'Cormorant Garamond',serif;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: var(--green-deep);
+  }
+  .price-unit { font-size: 0.8rem; color: #9ca3af; }
+  .price-note { font-size: 0.75rem; color: var(--gold); margin-left: auto; }
+  .btn-book {
+    width: 100%;
+    background: var(--green-deep);
+    color: var(--white);
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.3s;
+  }
+  .btn-book:hover { background: var(--green-mid); transform: translateY(-1px); }
+  .pricing-card.featured .btn-book { background: var(--gold); color: var(--green-deep); }
+  .pricing-card.featured .btn-book:hover { background: var(--gold-light); }
+  .pricing-note {
+    text-align: center;
+    margin-top: 32px;
+    font-size: 0.83rem;
+    color: #9ca3af;
+  }
+
+  /* ─── GALLERY ─── */
+  .gallery-section { background: var(--text-dark); padding-bottom: 90px; }
+  .gallery-section .section-title { color: var(--white); }
+  .gallery-section .section-tag { color: var(--gold-light); }
+  .gallery-section .section-tag::before { background: var(--gold-light); }
+  .gallery-intro { max-width: 1200px; margin: 0 auto 56px; }
+  .gallery-masthead {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 20px;
+  }
+  .gallery-filter-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .gf-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.6);
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+  }
+  .gf-btn.active, .gf-btn:hover {
+    background: var(--gold);
+    color: var(--green-deep);
+    border-color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* Masonry Gallery */
+  .gallery-masonry {
+    max-width: 1200px; margin: 0 auto;
+    columns: 3;
+    column-gap: 16px;
+  }
+  @media(max-width:900px){ .gallery-masonry { columns: 2; } }
+  @media(max-width:550px){ .gallery-masonry { columns: 1; } }
+  .gallery-item {
+    break-inside: avoid;
+    margin-bottom: 16px;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    display: block;
+    transition: transform 0.4s, opacity 0.4s;
+  }
+  .gallery-item:hover { transform: scale(1.02); }
+  .gallery-item.hidden { opacity: 0; transform: scale(0.95); pointer-events: none; }
+  .gallery-photo {
+    width: 100%;
+    display: block;
+    min-height: 160px;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* Unique backgrounds for each gallery item — replace with real photos */
+  .g1 { background: linear-gradient(135deg,#0a2a1a 0%,#1b3a28 40%,#1a4a30 100%); min-height: 280px; }
+  .g2 { background: linear-gradient(160deg,#0f4c75 0%,#1b7bc4 100%); min-height: 200px; }
+  .g3 { background: linear-gradient(135deg,#7f5539 0%,#c9973a 70%,#ffd97d 100%); min-height: 240px; }
+  .g4 { background: linear-gradient(145deg,#1a1a2e 0%,#16213e 40%,#0f3460 100%); min-height: 310px; }
+  .g5 { background: linear-gradient(135deg,#2d6a4f 0%,#52b788 60%,#95d5b2 100%); min-height: 190px; }
+  .g6 { background: linear-gradient(155deg,#3a0a0a 0%,#8b1a1a 50%,#ff6b6b 100%); min-height: 220px; }
+  .g7 { background: linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 50%,#4a90d9 100%); min-height: 260px; }
+  .g8 { background: linear-gradient(135deg,#606c38 0%,#a7c957 60%,#dda15e 100%); min-height: 200px; }
+  .g9 { background: linear-gradient(160deg,#0a0a0a 0%,#1a1a1a 50%, #c9973a 100%); min-height: 300px; }
+  .g10 { background: linear-gradient(135deg,#023e8a 0%,#0077b6 50%,#00b4d8 100%); min-height: 220px; }
+  .g11 { background: linear-gradient(155deg,#2d2d2d 0%,#5c5c5c 50%, #e8c278 100%); min-height: 180px; }
+  .g12 { background: linear-gradient(135deg,#1b1b2f 0%,#2d3561 50%,#a2d2ff 100%); min-height: 250px; }
+
+  .gallery-item-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.35s;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 20px;
+  }
+  .gallery-item:hover .gallery-item-overlay { opacity: 1; }
+  .gallery-item-label { color: var(--white); font-size: 0.9rem; font-weight: 500; }
+  .gallery-item-sub { color: rgba(255,255,255,0.6); font-size: 0.75rem; margin-top: 4px; }
+  .gallery-photo-icon { font-size: 3.5rem; opacity: 0.4; position: relative; z-index: 1; }
+  .gallery-photo-tag {
+    position: absolute; bottom: 12px; left: 12px;
+    background: rgba(0,0,0,0.5);
+    color: rgba(255,255,255,0.6);
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Lightbox */
+  #lightbox {
+    display: none;
+    position: fixed; inset: 0; z-index: 9000;
+    background: rgba(0,0,0,0.92);
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease;
+  }
+  #lightbox.open { display: flex; }
+  .lightbox-inner {
+    position: relative;
+    max-width: 900px; width: 95%;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 30px 100px rgba(0,0,0,0.5);
+  }
+  .lightbox-close {
+    position: absolute; top: 16px; right: 16px;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    cursor: pointer;
+    z-index: 10;
+    transition: background 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lightbox-close:hover { background: rgba(255,255,255,0.3); }
+  .lightbox-photo {
+    width: 100%; aspect-ratio: 4/3;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 6rem;
+  }
+
+  /* ─── LOCATION ─── */
+  .location-section { background: var(--cream); }
+  .location-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; max-width: 1200px; margin: 0 auto; }
+  .map-container {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 50px var(--shadow);
+    position: relative;
+    aspect-ratio: 4/3;
+    background: #e8e8e8;
+  }
+  .map-container iframe { width: 100%; height: 100%; border: none; }
+  .map-overlay-pin {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    display: flex; flex-direction: column; align-items: center;
+    pointer-events: none;
+  }
+  .location-details { display: flex; flex-direction: column; gap: 24px; }
+  .loc-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 22px 24px;
+    box-shadow: 0 4px 20px rgba(27,58,40,0.06);
+    display: flex; gap: 18px; align-items: flex-start;
+    transition: transform 0.3s;
+  }
+  .loc-card:hover { transform: translateX(6px); }
+  .loc-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .loc-card h4 { font-family: 'Cormorant Garamond',serif; font-size: 1.2rem; color: var(--green-deep); margin-bottom: 6px; }
+  .loc-card p { font-size: 0.85rem; color: var(--text-mid); line-height: 1.65; }
+  .distance-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .dist-chip {
+    background: var(--cream-dark);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 0.75rem;
+    color: var(--green-mid);
+    font-weight: 500;
+  }
+
+  /* ─── CONTACT ─── */
+  .contact-section { background: var(--green-deep); }
+  .contact-section .section-tag { color: var(--gold-light); }
+  .contact-section .section-tag::before { background: var(--gold-light); }
+  .contact-section .section-title { color: var(--white); }
+  .contact-section .section-divider { background: linear-gradient(90deg,var(--gold-light),rgba(232,194,120,0.3)); }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; max-width: 1100px; margin: 0 auto; }
+  .contact-form-wrap { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 36px; border: 1px solid rgba(255,255,255,0.1); }
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; font-size: 0.78rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 8px; font-weight: 500; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 13px 16px;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    transition: border-color 0.3s;
+    outline: none;
+  }
+  .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(255,255,255,0.3); }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--gold); }
+  .form-group select option { background: var(--green-deep); }
+  .form-group textarea { resize: vertical; min-height: 110px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .btn-submit {
+    width: 100%;
+    background: var(--gold);
+    color: var(--green-deep);
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.3s;
+    margin-top: 4px;
+  }
+  .btn-submit:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(201,151,58,0.4); }
+  .contact-info { display: flex; flex-direction: column; gap: 28px; }
+  .ci-item { display: flex; gap: 18px; align-items: flex-start; }
+  .ci-icon-wrap {
+    width: 50px; height: 50px; flex-shrink: 0;
+    border-radius: 14px;
+    background: rgba(201,151,58,0.15);
+    border: 1px solid rgba(201,151,58,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+  }
+  .ci-item h4 { color: rgba(255,255,255,0.5); font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .ci-item p { color: var(--white); font-size: 0.95rem; line-height: 1.6; }
+  .ci-item a { color: var(--gold-light); text-decoration: none; }
+  .ci-item a:hover { text-decoration: underline; }
+  .social-links { display: flex; gap: 12px; flex-wrap: wrap; }
+  .social-link {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7);
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 0.83rem;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+    transition: all 0.3s;
+  }
+  .social-link:hover { background: var(--gold); color: var(--green-deep); border-color: var(--gold); font-weight: 600; }
+  .wabox {
+    background: rgba(37,211,102,0.12);
+    border: 1px solid rgba(37,211,102,0.3);
+    border-radius: 16px;
+    padding: 22px 24px;
+    display: flex; align-items: center; gap: 16px;
+    text-decoration: none;
+    transition: all 0.3s;
+    margin-top: 10px;
+  }
+  .wabox:hover { background: rgba(37,211,102,0.2); transform: translateX(6px); }
+  .wabox-icon { font-size: 2rem; }
+  .wabox h4 { color: #25d366; font-weight: 600; margin-bottom: 3px; }
+  .wabox p { color: rgba(255,255,255,0.5); font-size: 0.82rem; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: #0d1f14;
+    padding: 50px 5vw 30px;
+    color: rgba(255,255,255,0.5);
+  }
+  .footer-inner { max-width: 1200px; margin: 0 auto; }
+  .footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+  .footer-brand .nav-logo { font-size: 1.4rem; margin-bottom: 12px; display: block; }
+  .footer-brand p { font-size: 0.84rem; line-height: 1.7; max-width: 280px; }
+  .footer-links h5 { color: var(--white); font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 18px; }
+  .footer-links ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.87rem; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--gold-light); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .footer-bottom p { font-size: 0.8rem; }
+  .footer-bottom span { color: var(--gold); }
+
+  /* ─── ABOUT PAGE ─── */
+  .about-page-hero {
+    background: var(--green-deep);
+    padding: 130px 5vw 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .about-page-hero::before {
+    content:'';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 100%, rgba(116,184,146,0.2) 0%, transparent 60%);
+  }
+  .about-page-hero .section-tag { color: var(--gold-light); display: block; margin: 0 auto 14px; }
+  .about-page-hero .section-tag::before { left: 50%; transform: translate(-50%,-50%); }
+  .about-page-hero h1 {
+    font-family: 'Cormorant Garamond',serif;
+    font-size: clamp(2.5rem,5vw,4rem);
+    color: var(--white);
+    line-height: 1.1;
+    position: relative;
+  }
+  .about-page-hero p { color: rgba(255,255,255,0.6); max-width: 560px; margin: 18px auto 0; line-height: 1.8; }
+  .team-section { background: var(--cream); padding: 80px 5vw; }
+  .story-section { background: var(--white); padding: 80px 5vw; }
+  .story-content { max-width: 800px; margin: 0 auto; }
+  .story-content p { font-size: 1rem; line-height: 1.9; color: var(--text-mid); margin-bottom: 20px; }
+  .story-quote {
+    border-left: 4px solid var(--gold);
+    padding-left: 28px;
+    margin: 36px 0;
+    font-family: 'Cormorant Garamond',serif;
+    font-size: 1.5rem;
+    font-style: italic;
+    color: var(--green-deep);
+    line-height: 1.5;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes slideRight { from { opacity:0; transform:translateX(-30px); } to { opacity:1; transform:translateX(0); } }
+  @keyframes slideLeft { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+  @keyframes scaleIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left { opacity:0; transform:translateX(-40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal-left.visible { opacity:1; transform:translateX(0); }
+  .reveal-right { opacity:0; transform:translateX(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal-right.visible { opacity:1; transform:translateX(0); }
+  .reveal-scale { opacity:0; transform:scale(0.92); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal-scale.visible { opacity:1; transform:scale(1); }
+
+  /* ─── MOBILE NAV ─── */
+  @media (max-width: 900px) {
+    .hamburger { display: flex; }
+    .nav-links {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: var(--green-deep);
+      padding: 90px 30px 40px;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .nav-links.open { display: flex; animation: fadeIn 0.3s ease; }
+    .nav-links li a { font-size: 1.1rem; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.08); border-radius: 0; }
+    .nav-links li:last-child a { border-bottom: none; }
+    .about-grid, .contact-grid, .location-grid, .footer-top { grid-template-columns: 1fr; }
+    .about-visual { height: 350px; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    section { padding: 60px 5vw; }
+    .pricing-cards { grid-template-columns: 1fr; }
+    .about-img-secondary { width: 65%; }
+    .about-badge-float { right: 0; }
+  }
+
+  /* ─── TOAST ─── */
+  #toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--green-deep);
+    color: var(--white);
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-size: 0.88rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    border: 1px solid rgba(201,151,58,0.4);
+    z-index: 9998;
+    transition: transform 0.4s ease;
+    white-space: nowrap;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Page transition */
+  .page-transition-overlay {
+    position: fixed; inset: 0; z-index: 8000;
+    background: var(--green-deep);
+    transform: translateY(100%);
+    transition: transform 0.5s cubic-bezier(0.76,0,0.24,1);
+    pointer-events: none;
+  }
+  .page-transition-overlay.entering { transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-leaf"></div>
+  <div class="loader-title">Hiyswa Jambu Homestay</div>
+</div>
+
+<!-- PAGE TRANSITION -->
+<div class="page-transition-overlay" id="pageTransition"></div>
+
+<!-- TOAST -->
+<div id="toast">✓ Message sent! We'll contact you shortly.</div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-logo" onclick="navigateTo('home')">
+    Hiyswa Jambu
+    <span>Homestay</span>
+  </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#" onclick="navigateTo('home')" data-page="home">Home</a></li>
+    <li><a href="#" onclick="navigateTo('about')" data-page="about">About</a></li>
+    <li><a href="#" onclick="navigateTo('facilities')" data-page="facilities">Facilities</a></li>
+    <li><a href="#" onclick="navigateTo('rooms')" data-page="rooms">Rooms & Rates</a></li>
+    <li><a href="#" onclick="navigateTo('gallery')" data-page="gallery">Gallery</a></li>
+    <li><a href="#" onclick="navigateTo('location')" data-page="location">Location</a></li>
+    <li><a href="#" onclick="navigateTo('contact')" class="nav-book-btn" data-page="contact">Book Now</a></li>
+  </ul>
+</nav>
+
+<!-- ════════════ HOME PAGE ════════════ -->
+<div id="page-home" class="page active">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <!-- Decorative leaves SVG -->
+    <div class="hero-leaf hero-leaf-1">
+      <svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 0 C100 0 200 80 180 180 C160 260 100 300 100 300 C100 300 0 260 20 180 C40 80 100 0 100 0Z"/>
+      </svg>
+    </div>
+    <div class="hero-leaf hero-leaf-2">
+      <svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 0 C100 0 200 80 180 180 C160 260 100 300 100 300 C100 300 0 260 20 180 C40 80 100 0 100 0Z"/>
+      </svg>
+    </div>
+    <div class="hero-leaf hero-leaf-3">
+      <svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 0 C100 0 200 80 180 180 C160 260 100 300 100 300 C100 300 0 260 20 180 C40 80 100 0 100 0Z"/>
+      </svg>
+    </div>
+    <div class="hero-particles" id="particles"></div>
+
+    <div class="hero-content">
+      <div class="hero-badge">✦ Welcome to Paradise ✦</div>
+      <h1 class="hero-title">
+        <em>Hiyswa Jambu</em>
+        <span class="line2">Homestay</span>
+      </h1>
+      <p class="hero-tagline">A tropical retreat where families create memories — your home away from home, complete with a water park, pool, futsal court, and more.</p>
+      <div class="hero-ctas">
+        <button class="btn-primary" onclick="navigateTo('rooms')">View Rooms & Rates</button>
+        <button class="btn-outline" onclick="navigateTo('facilities')">Explore Facilities</button>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-item reveal">
+      <div class="stat-num" data-count="6">0</div>
+      <div class="stat-label">Facilities</div>
+    </div>
+    <div class="stat-item reveal" style="transition-delay:0.1s">
+      <div class="stat-num" data-count="100">0</div>
+      <div class="stat-label">Happy Guests</div>
+    </div>
+    <div class="stat-item reveal" style="transition-delay:0.2s">
+      <div class="stat-num" data-count="5">0</div>
+      <div class="stat-label">Star Rating</div>
+    </div>
+    <div class="stat-item reveal" style="transition-delay:0.3s">
+      <div class="stat-num" data-count="24">0</div>
+      <div class="stat-label">Hour Service</div>
+    </div>
+  </div>
+
+  <!-- ABOUT SNIPPET -->
+  <section>
+    <div class="about-grid">
+      <div class="about-visual reveal-left">
+        <div class="about-img-main">
+          <!-- Replace the gradient background-image with: style="background-image: url('your-main-photo.jpg'); background-size: cover; background-position: center;" -->
+          <div class="photo-placeholder">📸 Add your main homestay photo here<br><small>Replace background with: background-image: url('photo.jpg')</small></div>
+        </div>
+        <div class="about-img-secondary">
+          <!-- Replace with a secondary photo -->
+          <div class="photo-placeholder" style="color:rgba(255,255,255,0.3);font-size:0.75rem;padding:10px;text-align:center;">📸 Secondary photo</div>
+        </div>
+        <div class="about-badge-float">
+          <strong>★ 5.0</strong>
+          <span>Guest Rating</span>
+        </div>
+      </div>
+      <div class="reveal-right">
+        <div class="section-tag">Our Story</div>
+        <h2 class="section-title">A Place Where <em>Every Moment</em> Feels Like Home</h2>
+        <div class="section-divider"></div>
+        <p class="section-body">Hiyswa Jambu Homestay was born from a simple dream — to create a place where families and friends could escape the hustle and gather in comfort and joy. Nestled in a serene setting, our homestay offers the perfect balance of nature, fun, and relaxation.</p>
+        <div class="values-grid" style="margin-top:28px">
+          <div class="value-chip"><span class="value-chip-icon">🌊</span><span class="value-chip-text">Swimming Pool</span></div>
+          <div class="value-chip"><span class="value-chip-icon">🎉</span><span class="value-chip-text">Mini Water Park</span></div>
+          <div class="value-chip"><span class="value-chip-icon">⚽</span><span class="value-chip-text">Futsal Court</span></div>
+          <div class="value-chip"><span class="value-chip-icon">🔥</span><span class="value-chip-text">BBQ Place</span></div>
+        </div>
+        <button class="btn-primary" style="margin-top:32px" onclick="navigateTo('about')">Read Our Story</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FACILITIES PREVIEW -->
+  <section style="background:var(--cream-dark); padding:80px 5vw; text-align:center;">
+    <div class="section-tag reveal" style="display:block;margin:0 auto 14px">World-Class Amenities</div>
+    <h2 class="section-title reveal" style="text-align:center;margin:0 auto 10px">Everything You <em>Need & More</em></h2>
+    <div class="section-divider reveal" style="margin:14px auto 40px"></div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:16px;max-width:900px;margin:0 auto 36px">
+      <div class="value-chip reveal" style="padding:18px 22px;background:white;box-shadow:0 4px 15px rgba(0,0,0,0.06)"><span class="value-chip-icon">🏊</span><span class="value-chip-text">Swimming Pool</span></div>
+      <div class="value-chip reveal" style="padding:18px 22px;background:white;box-shadow:0 4px 15px rgba(0,0,0,0.06);transition-delay:0.1s"><span class="value-chip-icon">💦</span><span class="value-chip-text">Mini Water Park</span></div>
+      <div class="value-chip reveal" style="padding:18px 22px;background:white;box-shadow:0 4px 15px rgba(0,0,0,0.06);transition-delay:0.2s"><span class="value-chip-icon">⚽</span><span class="value-chip-text">Futsal Court</span></div>
+      <div class="value-chip reveal" style="padding:18px 22px;background:white;box-shadow:0 4px 15px rgba(0,0,0,0.06);transition-delay:0.3s"><span class="value-chip-icon">🚗</span><span class="value-chip-text">Spacious Parking</span></div>
+      <div class="value-chip reveal" style="padding:18px 22px;background:white;box-shadow:0 4px 15px rgba(0,0,0,0.06);transition-delay:0.4s"><span class="value-chip-icon">🔥</span><span class="value-chip-text">BBQ Place</span></div>
+      <div class="value-chip reveal" style="padding:18px 22px;background:white;box-shadow:0 4px 15px rgba(0,0,0,0.06);transition-delay:0.5s"><span class="value-chip-icon">🚲</span><span class="value-chip-text">Bicycle Rental</span></div>
+    </div>
+    <button class="btn-primary" onclick="navigateTo('facilities')">Explore All Facilities</button>
+  </section>
+</div>
+
+<!-- ════════════ ABOUT PAGE ════════════ -->
+<div id="page-about" class="page">
+  <div class="about-page-hero">
+    <div class="section-tag">Our Story</div>
+    <h1>Where Every Guest <em style="font-style:italic;color:var(--gold-light)">Becomes Family</em></h1>
+    <p>Discover the heart and soul behind Hiyswa Jambu Homestay — built on warmth, hospitality, and a love for joyful gatherings.</p>
+  </div>
+
+  <section class="story-section">
+    <div class="story-content">
+      <div class="section-tag reveal">Our Beginning</div>
+      <h2 class="section-title reveal">A Dream Built <em>With Love</em></h2>
+      <div class="section-divider reveal"></div>
+      <div class="reveal">
+        <p>Hiyswa Jambu Homestay started with a simple vision — to create a space where families, friends, and loved ones can come together and truly unwind. We believe that the best memories are made in places that feel like home, and that is exactly what we have built for you.</p>
+        <p>Our homestay is designed with your comfort in mind. From the moment you arrive, you'll be welcomed by lush greenery, the sound of splashing water from our pool and mini water park, and the warm smiles of our team who are dedicated to making your stay unforgettable.</p>
+        <div class="story-quote">"We don't just rent rooms — we create experiences that families will talk about for years to come."</div>
+        <p>Whether you're here for a family holiday, a birthday celebration, a team outing, or simply a weekend escape, Hiyswa Jambu offers everything you need under one roof. Our six world-class facilities — including a swimming pool, mini water park, futsal court, spacious event space, BBQ area, and bicycle rentals — ensure there's something for everyone, young and old alike.</p>
+        <p>We are proudly a family-owned and operated homestay, and this shows in everything we do — from the carefully maintained facilities to the thoughtful touches in every room. At Hiyswa Jambu, you are not just a guest. You are part of our family.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:var(--cream);padding:80px 5vw">
+    <div style="max-width:1100px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:50px">
+        <div class="section-tag reveal" style="display:block;margin:0 auto 12px">What We Offer</div>
+        <h2 class="section-title reveal" style="text-align:center">Our Core <em>Values</em></h2>
+        <div class="section-divider reveal" style="margin:14px auto"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px">
+        <div class="value-chip reveal" style="flex-direction:column;align-items:flex-start;padding:28px;background:white;border-radius:18px;box-shadow:0 4px 20px rgba(0,0,0,0.06)">
+          <span style="font-size:2.5rem;margin-bottom:14px">🏠</span>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--green-deep);margin-bottom:8px">Homely Comfort</h3>
+          <p style="font-size:0.86rem;color:var(--text-mid);line-height:1.7">Spacious, clean, and lovingly designed spaces that feel warm and welcoming from the moment you arrive.</p>
+        </div>
+        <div class="value-chip reveal" style="flex-direction:column;align-items:flex-start;padding:28px;background:white;border-radius:18px;box-shadow:0 4px 20px rgba(0,0,0,0.06);transition-delay:0.15s">
+          <span style="font-size:2.5rem;margin-bottom:14px">🌿</span>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--green-deep);margin-bottom:8px">Nature & Serenity</h3>
+          <p style="font-size:0.86rem;color:var(--text-mid);line-height:1.7">Set amidst lush natural surroundings, our homestay is a peaceful escape from the noise of everyday life.</p>
+        </div>
+        <div class="value-chip reveal" style="flex-direction:column;align-items:flex-start;padding:28px;background:white;border-radius:18px;box-shadow:0 4px 20px rgba(0,0,0,0.06);transition-delay:0.3s">
+          <span style="font-size:2.5rem;margin-bottom:14px">🎊</span>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--green-deep);margin-bottom:8px">Celebration Ready</h3>
+          <p style="font-size:0.86rem;color:var(--text-mid);line-height:1.7">Perfect for birthdays, family reunions, team building, and any special occasion that deserves to be celebrated.</p>
+        </div>
+        <div class="value-chip reveal" style="flex-direction:column;align-items:flex-start;padding:28px;background:white;border-radius:18px;box-shadow:0 4px 20px rgba(0,0,0,0.06);transition-delay:0.45s">
+          <span style="font-size:2.5rem;margin-bottom:14px">⭐</span>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--green-deep);margin-bottom:8px">Exceptional Service</h3>
+          <p style="font-size:0.86rem;color:var(--text-mid);line-height:1.7">Our team is available around the clock, dedicated to making every aspect of your stay perfect.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ════════════ FACILITIES PAGE ════════════ -->
+<div id="page-facilities" class="page">
+  <section class="facilities-section" style="padding-top:120px">
+    <div class="facilities-header">
+      <div class="section-tag reveal">World-Class Amenities</div>
+      <h2 class="section-title reveal">Our <em>Facilities</em></h2>
+      <div class="section-divider reveal"></div>
+      <p class="section-body reveal" style="color:rgba(255,255,255,0.6)">Every facility at Hiyswa Jambu is designed with your enjoyment in mind. From the thrilling water park to the serene bicycle trails, we have curated experiences for every kind of guest.</p>
+    </div>
+
+    <div class="facilities-grid">
+      <div class="facility-card reveal">
+        <div class="facility-photo fp-pool">
+          <!-- Replace this div with: <img src="your-pool-photo.jpg" style="width:100%;height:100%;object-fit:cover"> -->
+          <div class="facility-photo-icon">🏊</div>
+          <div class="facility-photo-overlay"></div>
+          <div class="photo-replace-tag">Add Photo</div>
+        </div>
+        <div class="facility-info">
+          <div class="facility-tag">Open Daily</div>
+          <h3 class="facility-name">Swimming Pool</h3>
+          <p class="facility-desc">Dive into our pristine swimming pool — a sparkling retreat for the whole family. Perfect for morning swims, evening relaxation, or letting the kids splash freely in a safe, supervised environment.</p>
+        </div>
+      </div>
+
+      <div class="facility-card reveal" style="transition-delay:0.1s">
+        <div class="facility-photo fp-waterpark">
+          <div class="facility-photo-icon">💦</div>
+          <div class="facility-photo-overlay"></div>
+          <div class="photo-replace-tag">Add Photo</div>
+        </div>
+        <div class="facility-info">
+          <div class="facility-tag">Kids Favourite</div>
+          <h3 class="facility-name">Mini Water Park</h3>
+          <p class="facility-desc">A splash paradise that kids absolutely love! Our mini water park features exciting water features, slides, and splash zones — the ultimate fun for the little ones (and grown-ups too!).</p>
+        </div>
+      </div>
+
+      <div class="facility-card reveal" style="transition-delay:0.2s">
+        <div class="facility-photo fp-futsal">
+          <div class="facility-photo-icon">⚽</div>
+          <div class="facility-photo-overlay"></div>
+          <div class="photo-replace-tag">Add Photo</div>
+        </div>
+        <div class="facility-info">
+          <div class="facility-tag">Sports & Fun</div>
+          <h3 class="facility-name">Futsal Court</h3>
+          <p class="facility-desc">Challenge your friends and family to a match on our full-sized futsal court. Well-lit and well-maintained, it's the perfect venue for friendly competitions and team-building activities.</p>
+        </div>
+      </div>
+
+      <div class="facility-card reveal" style="transition-delay:0.1s">
+        <div class="facility-photo fp-parking">
+          <div class="facility-photo-icon">🚗</div>
+          <div class="facility-photo-overlay"></div>
+          <div class="photo-replace-tag">Add Photo</div>
+        </div>
+        <div class="facility-info">
+          <div class="facility-tag">Events Welcome</div>
+          <h3 class="facility-name">Spacious Parking / Event Space</h3>
+          <p class="facility-desc">A versatile, expansive space that doubles as generous parking for your vehicles AND a flexible event venue — perfect for weddings, kenduri, corporate events, and large family gatherings.</p>
+        </div>
+      </div>
+
+      <div class="facility-card reveal" style="transition-delay:0.2s">
+        <div class="facility-photo fp-bbq">
+          <div class="facility-photo-icon">🔥</div>
+          <div class="facility-photo-overlay"></div>
+          <div class="photo-replace-tag">Add Photo</div>
+        </div>
+        <div class="facility-info">
+          <div class="facility-tag">Nighttime Favourite</div>
+          <h3 class="facility-name">Barbeque Place</h3>
+          <p class="facility-desc">Gather around the grill as the stars come out. Our dedicated BBQ area is perfect for evening cookouts — enjoy the sizzle, the aroma, and the laughter of good company under the open sky.</p>
+        </div>
+      </div>
+
+      <div class="facility-card reveal" style="transition-delay:0.3s">
+        <div class="facility-photo fp-bicycle">
+          <div class="facility-photo-icon">🚲</div>
+          <div class="facility-photo-overlay"></div>
+          <div class="photo-replace-tag">Add Photo</div>
+        </div>
+        <div class="facility-info">
+          <div class="facility-tag">Explore & Ride</div>
+          <h3 class="facility-name">Bicycle Renting</h3>
+          <p class="facility-desc">Rent a bicycle and explore the beautiful surroundings at your own pace. Ideal for morning rides, family adventures, or simply enjoying the fresh air. Suitable for all ages.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DRONE VIDEO -->
+  <section class="video-section">
+    <div style="text-align:center;margin-bottom:40px">
+      <div class="section-tag reveal" style="color:var(--gold-light);display:block;margin:0 auto 14px">Bird's Eye View</div>
+      <h2 class="section-title reveal" style="color:var(--white);text-align:center">See <em style="color:var(--gold-light)">Hiyswa Jambu</em> From Above</h2>
+      <div class="section-divider reveal" style="margin:14px auto;background:linear-gradient(90deg,var(--gold-light),rgba(232,194,120,0.3))"></div>
+      <p class="reveal" style="color:rgba(255,255,255,0.55);max-width:500px;margin:0 auto;font-size:0.92rem;line-height:1.8">Experience the full beauty of our homestay through our breathtaking drone footage — every corner, every splash, every smile, captured from the sky.</p>
+    </div>
+    <div class="video-wrapper reveal-scale" id="videoWrapper" onclick="playVideo()">
+      <div class="video-thumb" id="videoThumb">
+        <div class="video-thumb-bg"></div>
+        <div class="video-drone-label"><div class="drone-dot"></div> Drone Footage</div>
+        <div class="play-btn-outer">
+          <div class="play-btn-inner">▶</div>
+        </div>
+        <div class="video-caption">
+          <h3>Hiyswa Jambu Homestay</h3>
+          <p>Aerial View • 4K</p>
+        </div>
+      </div>
+      <!-- ↓ Replace this with actual video embed. Options: -->
+      <!-- YouTube: <div class="video-iframe-container" id="videoIframe"><iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID?autoplay=1" allowfullscreen allow="autoplay"></iframe></div> -->
+      <!-- Or use a direct video file: <video id="videoIframe" class="video-iframe-container" controls style="width:100%;display:none"><source src="drone-video.mp4" type="video/mp4"></video> -->
+      <div class="video-iframe-container" id="videoIframe">
+        <!-- Paste your video embed here -->
+        <div style="width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);font-size:0.9rem;font-family:'Cormorant Garamond',serif;font-size:1.2rem;">📹 Replace with your drone video embed</div>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:20px;font-size:0.75rem;color:rgba(255,255,255,0.3);letter-spacing:2px">CLICK TO PLAY • 4K AERIAL FOOTAGE</p>
+  </section>
+</div>
+
+<!-- ════════════ ROOMS & RATES PAGE ════════════ -->
+<div id="page-rooms" class="page">
+  <section class="rooms-section" style="padding-top:120px">
+    <div class="rooms-intro">
+      <div class="section-tag">Accommodation</div>
+      <h2 class="section-title reveal">Choose Your <em>Perfect Stay</em></h2>
+      <div class="section-divider reveal"></div>
+      <p class="section-body reveal">All rates include access to all facilities — swimming pool, mini water park, futsal court, parking/event space, BBQ area, and bicycle rentals. Prices shown are approximate — contact us for exact availability and custom packages.</p>
+    </div>
+
+    <div class="pricing-cards">
+      <div class="pricing-card reveal">
+        <div class="pricing-card-photo pp-standard">🛏️</div>
+        <!-- Replace with: <img src="room1.jpg" style="width:100%;height:200px;object-fit:cover"> -->
+        <div class="pricing-card-body">
+          <div class="pricing-card-type">Weekday</div>
+          <div class="pricing-card-name">Standard Room</div>
+          <p class="pricing-card-desc">Cozy and well-appointed room perfect for couples or small families. All the essentials, nothing you don't need.</p>
+          <ul class="pricing-card-amenities">
+            <li>Air-conditioned room</li>
+            <li>Queen-size bed</li>
+            <li>Private bathroom</li>
+            <li>Full facilities access</li>
+            <li>Free WiFi</li>
+          </ul>
+          <div class="pricing-card-price">
+            <span class="price-from">From</span>
+            <span class="price-amount">RM 300</span>
+            <span class="price-unit">/ night</span>
+          </div>
+          <button class="btn-book" onclick="navigateTo('contact')">Enquire & Book</button>
+        </div>
+      </div>
+
+      <div class="pricing-card featured reveal" style="transition-delay:0.1s">
+        <div class="pricing-card-badge">Most Popular</div>
+        <div class="pricing-card-photo pp-deluxe">🏡</div>
+        <div class="pricing-card-body">
+          <div class="pricing-card-type">Weekday / Weekend</div>
+          <div class="pricing-card-name">Deluxe Room</div>
+          <p class="pricing-card-desc">Our most sought-after option — extra space, premium bedding, and a relaxing balcony view of the surroundings.</p>
+          <ul class="pricing-card-amenities">
+            <li>Spacious deluxe room</li>
+            <li>King-size bed</li>
+            <li>En-suite bathroom</li>
+            <li>Private balcony</li>
+            <li>Full facilities access</li>
+            <li>Free WiFi</li>
+          </ul>
+          <div class="pricing-card-price">
+            <span class="price-from">From</span>
+            <span class="price-amount">RM 450</span>
+            <span class="price-unit">/ night</span>
+          </div>
+          <button class="btn-book" onclick="navigateTo('contact')">Enquire & Book</button>
+        </div>
+      </div>
+
+      <div class="pricing-card reveal" style="transition-delay:0.2s">
+        <div class="pricing-card-photo pp-suite">👑</div>
+        <div class="pricing-card-body">
+          <div class="pricing-card-type">Weekend / Special</div>
+          <div class="pricing-card-name">Family Suite</div>
+          <p class="pricing-card-desc">The ultimate family experience — spacious suite with multiple sleeping areas and a dedicated family lounge space.</p>
+          <ul class="pricing-card-amenities">
+            <li>2 bedrooms + lounge</li>
+            <li>Sleeps up to 8 guests</li>
+            <li>2 bathrooms</li>
+            <li>Kitchen access</li>
+            <li>Full facilities access</li>
+            <li>Priority pool access</li>
+          </ul>
+          <div class="pricing-card-price">
+            <span class="price-from">From</span>
+            <span class="price-amount">RM 700</span>
+            <span class="price-unit">/ night</span>
+          </div>
+          <button class="btn-book" onclick="navigateTo('contact')">Enquire & Book</button>
+        </div>
+      </div>
+
+      <div class="pricing-card reveal" style="grid-column:1/-1;max-width:600px;margin:0 auto;width:100%">
+        <div class="pricing-card-photo pp-fullhouse" style="height:180px">🏘️</div>
+        <div class="pricing-card-body">
+          <div class="pricing-card-type">Full Package</div>
+          <div class="pricing-card-name">Full House Booking</div>
+          <p class="pricing-card-desc">Book the entire homestay exclusively for your group — perfect for large family gatherings, corporate retreats, weddings, and events. All facilities are yours for the duration of your stay.</p>
+          <ul class="pricing-card-amenities" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <li>Full exclusive access</li>
+            <li>All rooms included</li>
+            <li>Event space included</li>
+            <li>BBQ & all facilities</li>
+            <li>Up to 50+ guests</li>
+            <li>Custom packages available</li>
+          </ul>
+          <div class="pricing-card-price">
+            <span class="price-from">From</span>
+            <span class="price-amount">RM 1,500</span>
+            <span class="price-unit">/ night</span>
+            <span class="price-note">Contact for quote</span>
+          </div>
+          <button class="btn-book" onclick="navigateTo('contact')">Get Custom Quote</button>
+        </div>
+      </div>
+    </div>
+    <p class="pricing-note reveal">💡 All prices are indicative. Rates vary by season, day of week, and group size. Contact us for your exact quote and availability.</p>
+    <p class="pricing-note" style="margin-top:8px">📞 Special rates available for weekday stays, long stays, and repeat guests.</p>
+  </section>
+</div>
+
+<!-- ════════════ GALLERY PAGE ════════════ -->
+<div id="page-gallery" class="page">
+  <section class="gallery-section" style="padding-top:120px">
+    <div class="gallery-intro">
+      <div class="gallery-masthead">
+        <div>
+          <div class="section-tag reveal">Photo Gallery</div>
+          <h2 class="section-title reveal">Moments That <em style="color:var(--gold-light)">Speak</em></h2>
+          <div class="section-divider reveal" style="background:linear-gradient(90deg,var(--gold-light),rgba(232,194,120,0.3))"></div>
+          <p class="reveal" style="color:rgba(255,255,255,0.5);font-size:0.9rem;line-height:1.8;max-width:420px">From starlit nights to splashing days — a glimpse into the memories made at Hiyswa Jambu Homestay.</p>
+        </div>
+        <div class="gallery-filter-btns reveal">
+          <button class="gf-btn active" onclick="filterGallery('all',this)">All</button>
+          <button class="gf-btn" onclick="filterGallery('night',this)">Night Vibes</button>
+          <button class="gf-btn" onclick="filterGallery('pool',this)">Pool & Water</button>
+          <button class="gf-btn" onclick="filterGallery('guests',this)">Guests</button>
+          <button class="gf-btn" onclick="filterGallery('facilities',this)">Facilities</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="gallery-masonry" id="galleryGrid">
+      <!-- Replace each .gallery-photo with an <img> tag for real photos -->
+      <!-- Example: <img src="night-view.jpg" style="width:100%;display:block"> -->
+
+      <div class="gallery-item reveal" data-category="night" onclick="openLightbox(this,'Night View — The Magical Glow of Hiyswa Jambu','Evening')">
+        <div class="gallery-photo g1">
+          <div class="gallery-photo-icon">🌙</div>
+          <div class="photo-replace-tag">Add Night Photo</div>
+        </div>
+        <div class="gallery-item-overlay"><div class="gallery-item-label">Night View</div><div class="gallery-item-sub">Evening Ambiance</div></div>
+      </div>
+
+      <div class="gallery-item reveal" data-category="pool" onclick="openLightbox(this,'Pool Fun — Splash Into Bliss','Pool')">
+        <div class="gallery-photo g2">
+          <div class="gallery-photo-icon">🏊</div>
+          <div class="photo-replace-tag">Add Pool Photo</div>
+        </div>
+        <div class="gallery-item-overlay"><div class="gallery-item-label">The Pool</div><div class="gallery-item-sub">Crystal Clear Water</div></div>
+      </div>
+
+      <div class="gallery-item reveal" data-category="facilities" onclick="openLightbox(this,'BBQ Nights — Best Under the Stars','BBQ')">
+        <div class="gallery-photo g3">
+          <div class="gallery-photo-icon">🔥</div>
+          <div class="photo-replace-tag">Add BBQ Photo</div>
+        </div>
+        <div class="gallery-item-overlay"><div class="gallery-item-label">BBQ Night</div><div class="gallery-item-sub">Sizzle & Smoke</div></div>
+      </div>
+
+      <div class="gallery-item reveal" data-category="night" onclick="openLightbox(this,'Starlit Sky — Evenings to Remember','Night')">
+        <div class="gallery-photo g4">
+          <div class="gallery-photo-icon">✨</div>
+          <div class="photo-replace-tag">Add Night Photo</div>
+        </div>
+        <div class="gallery-item-overlay"><div class="gallery-item-label">Starlight Evenings</div><div class="gallery-item-sub">Sky Full of Stars</div></div>
+      </div>
+
+      <div class="gallery-item reveal" data-category="facilities" onclick="openLightbox(this,'Futsal Court — Friendly Matches','Futsal')">
+        <div class="gallery-photo g5">
+          <div class="gallery-photo-icon">⚽</div>
+          <div class="photo-replace-tag">Add Futsal Photo</div>
+        </div>
+        <div class="gallery-item-overlay"><div class="gallery-item-label">Futsal Court</div><div class="gallery-item-sub">Friendly Matches</div></div>
+      </div>
+
+      <div class="gallery-item reveal" data-category="guests" onclick="openLightbox(this,'Smiles & Memories — Our Guests','Guests')">
+        <div class="gallery-photo g6">
+          <div class="gallery-photo-icon">😊</div>
+          <div class="photo-replace-tag">Add Guest Photo</div>
+        </div>
+        <div class="gallery-item-overlay"><div class="gallery-item-label">Happy Guests</div><div class="gallery-item-sub">Smiles All Around</div></div>
+      </div>
+
+      <div class="gallery-item reveal" data-category="night" onclick="openLightbox(this,'Pool at Night — Glowing Blue Paradise','Night Pool')">
+        <div class="gallery-photo g7">
+          <div class="gallery-photo-icon">💙</div>
+          <div class="photo-replace-tag">Add Night Pool Photo</div>
+        </div>
+        <div class="gallery-item-overlay"><div class="gallery-item-label">Night Pool Glow</div><div class="gallery-item-sub">After Dark Magic</div></div>
+      </div>
+
+      <div class="gallery-item reveal" data-category="facilities" onclick="openLightbox(this,'Bicycle Rentals — Explore the Surroundings','Cycling')">
+        <div class="gallery-photo g8">
+          <div class="gallery-photo-icon">🚲</div>
+          <div class="photo-replace-tag">Add Cycling Photo</div>
+        </div>
+        <div class="gallery-item-overlay"><div class="gallery-item-label">Bicycle Rides</div><div class="gallery-item-sub">Explore & Discover</div></div>
+      </div>
+
+      <div class="gallery-item reveal" data-category="night" onclick="openLightbox(this,'Golden Hour — Warm Evening Light','Sunset')">
+        <div class="gallery-photo g9">
+          <div class="gallery-photo-icon">🌅</div>
+          <div class="photo-replace-tag">Add Sunset Photo</div>
+        </div>
+        <div class="gallery-item-overlay"><div class="gallery-item-label">Golden Hour</div><div class="gallery-item-sub">Warm Twilight</div></div>
+      </div>
+
+      <div class="gallery-item reveal" data-category="pool" onclick="openLightbox(this,'Water Park — Splash Zone!','Water Park')">
+        <div class="gallery-photo g10">
+          <div class="gallery-photo-icon">💦</div>
+          <div class="photo-replace-tag">Add Water Park Photo</div>
+        </div>
+        <div class="gallery-item-overlay"><div class="gallery-item-label">Mini Water Park</div><div class="gallery-item-sub">Kids Go Wild!</div></div>
+      </div>
+
+      <div class="gallery-item reveal" data-category="guests" onclick="openLightbox(this,'Family Gatherings — Together Is Better','Family')">
+        <div class="gallery-photo g11">
+          <div class="gallery-photo-icon">👨‍👩‍👧‍👦</div>
+          <div class="photo-replace-tag">Add Family Photo</div>
+        </div>
+        <div class="gallery-item-overlay"><div class="gallery-item-label">Family Time</div><div class="gallery-item-sub">Together Is Better</div></div>
+      </div>
+
+      <div class="gallery-item reveal" data-category="night" onclick="openLightbox(this,'Moonlit Nights — Peaceful Serenity','Moonlight')">
+        <div class="gallery-photo g12">
+          <div class="gallery-photo-icon">🌕</div>
+          <div class="photo-replace-tag">Add Moonlit Photo</div>
+        </div>
+        <div class="gallery-item-overlay"><div class="gallery-item-label">Moonlit Nights</div><div class="gallery-item-sub">Pure Serenity</div></div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:50px">
+      <p style="color:rgba(255,255,255,0.35);font-size:0.8rem;letter-spacing:2px;margin-bottom:20px">FOLLOW US FOR MORE BEAUTIFUL MOMENTS</p>
+      <a href="#" class="social-link" style="display:inline-flex;margin:0 auto">📸 Instagram @hiyswa.jambu</a>
+    </div>
+  </section>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="closeLightbox(event)">
+  <div class="lightbox-inner">
+    <button class="lightbox-close" onclick="closeLightboxBtn()">✕</button>
+    <div id="lightboxContent"></div>
+    <div style="padding:20px;background:#111;text-align:center">
+      <p id="lightboxTitle" style="color:white;font-family:'Cormorant Garamond',serif;font-size:1.2rem"></p>
+      <p id="lightboxSub" style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin-top:4px;letter-spacing:2px"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ LOCATION PAGE ════════════ -->
+<div id="page-location" class="page">
+  <section class="location-section" style="padding-top:120px">
+    <div style="max-width:1200px;margin:0 auto 56px">
+      <div class="section-tag reveal">Find Us</div>
+      <h2 class="section-title reveal">Our <em>Location</em></h2>
+      <div class="section-divider reveal"></div>
+      <p class="section-body reveal">Conveniently located in Selangor — easy to reach, yet perfectly secluded for a peaceful retreat.</p>
+    </div>
+
+    <div class="location-grid">
+      <div class="map-container reveal-left">
+        <!-- 
+          Replace the placeholder below with a real Google Maps embed:
+          1. Go to maps.google.com
+          2. Search your exact address
+          3. Click Share → Embed a map → Copy HTML
+          4. Paste the <iframe> tag here, replacing the placeholder div
+        -->
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#e8f4e8 0%,#c8dfc8 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#2d6a4f">
+          <div style="font-size:3rem">🗺️</div>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600">Map Placeholder</p>
+          <p style="font-size:0.82rem;text-align:center;padding:0 20px;color:#5a8a6a">Replace with Google Maps embed<br>Share → Embed a map → paste &lt;iframe&gt; here</p>
+        </div>
+        <!-- 
+        EXAMPLE (replace YOUR_API_KEY and coordinates):
+        <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d..." 
+          allowfullscreen="" 
+          loading="lazy">
+        </iframe>
+        -->
+      </div>
+
+      <div class="location-details reveal-right">
+        <div class="loc-card">
+          <div class="loc-icon">📍</div>
+          <div>
+            <h4>Address</h4>
+            <p>Hiyswa Jambu Homestay<br>
+            [Your Full Address Here]<br>
+            Selangor, Malaysia</p>
+          </div>
+        </div>
+
+        <div class="loc-card">
+          <div class="loc-icon">🚗</div>
+          <div>
+            <h4>Getting Here</h4>
+            <p>Easily accessible by car via major highways. Ample parking available on-site for all guests.</p>
+            <div class="distance-chips" style="margin-top:12px">
+              <span class="dist-chip">~30 min from KL</span>
+              <span class="dist-chip">~20 min from Shah Alam</span>
+              <span class="dist-chip">~15 min from Subang</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="loc-card">
+          <div class="loc-icon">🕐</div>
+          <div>
+            <h4>Check-in / Check-out</h4>
+            <p><strong>Check-in:</strong> 3:00 PM onwards<br>
+            <strong>Check-out:</strong> 12:00 PM (noon)<br>
+            <em style="font-size:0.82rem;color:#9ca3af">Early/late arrangements available upon request</em></p>
+          </div>
+        </div>
+
+        <div class="loc-card">
+          <div class="loc-icon">🏪</div>
+          <div>
+            <h4>Nearby Attractions</h4>
+            <p>Convenience stores, restaurants, petrol stations, and local markets all within a short drive.</p>
+            <div class="distance-chips" style="margin-top:12px">
+              <span class="dist-chip">Nearby Restaurants</span>
+              <span class="dist-chip">24hr Petrol Station</span>
+              <span class="dist-chip">Supermarket ~5min</span>
+            </div>
+          </div>
+        </div>
+
+        <a href="https://waze.com" target="_blank" class="wabox" style="text-decoration:none">
+          <div class="wabox-icon">📱</div>
+          <div>
+            <h4 style="color:#33ccff">Open in Waze</h4>
+            <p style="color:#6b7280;font-size:0.82rem">Get turn-by-turn directions to Hiyswa Jambu Homestay</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ════════════ CONTACT PAGE ════════════ -->
+<div id="page-contact" class="page">
+  <section class="contact-section" style="padding-top:120px">
+    <div style="max-width:1100px;margin:0 auto 56px">
+      <div class="section-tag reveal">Get In Touch</div>
+      <h2 class="section-title reveal">Book Your <em style="color:var(--gold-light)">Stay</em></h2>
+      <div class="section-divider reveal" style="background:linear-gradient(90deg,var(--gold-light),rgba(232,194,120,0.3))"></div>
+      <p class="reveal" style="color:rgba(255,255,255,0.55);font-size:0.95rem;line-height:1.8;max-width:560px">We'd love to host you! Reach out to check availability, ask questions, or make a booking. We respond within 24 hours.</p>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-form-wrap reveal-left">
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--white);margin-bottom:28px">Send Us a Message</h3>
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input type="text" placeholder="Ahmad"></div>
+          <div class="form-group"><label>Last Name</label><input type="text" placeholder="Razali"></div>
+        </div>
+        <div class="form-group"><label>Email Address</label><input type="email" placeholder="ahmad@email.com"></div>
+        <div class="form-group"><label>Phone / WhatsApp</label><input type="tel" placeholder="+60 12-345 6789"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Check-in Date</label><input type="date"></div>
+          <div class="form-group"><label>Check-out Date</label><input type="date"></div>
+        </div>
+        <div class="form-group">
+          <label>Room Type</label>
+          <select>
+            <option value="">Select a room type...</option>
+            <option>Standard Room</option>
+            <option>Deluxe Room</option>
+            <option>Family Suite</option>
+            <option>Full House Booking</option>
+            <option>Not sure yet</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Number of Guests</label><input type="number" placeholder="e.g. 4" min="1"></div>
+        <div class="form-group"><label>Message / Special Requests</label><textarea placeholder="Tell us about your visit — any special occasions, dietary requirements, or requests..."></textarea></div>
+        <button class="btn-submit" onclick="submitForm()">✉ Send Enquiry</button>
+      </div>
+
+      <div class="contact-info reveal-right">
+        <div class="ci-item">
+          <div class="ci-icon-wrap">📞</div>
+          <div>
+            <h4>Phone</h4>
+            <p><a href="tel:+601XXXXXXXX">+60 1X-XXXX XXXX</a></p>
+            <p style="font-size:0.8rem;color:rgba(255,255,255,0.35);margin-top:4px">Available daily, 8AM – 10PM</p>
+          </div>
+        </div>
+        <div class="ci-item">
+          <div class="ci-icon-wrap">✉️</div>
+          <div>
+            <h4>Email</h4>
+            <p><a href="mailto:info@hiyswa-jambu.com">info@hiyswa-jambu.com</a></p>
+            <p style="font-size:0.8rem;color:rgba(255,255,255,0.35);margin-top:4px">We reply within 24 hours</p>
+          </div>
+        </div>
+        <div class="ci-item">
+          <div class="ci-icon-wrap">📍</div>
+          <div>
+            <h4>Location</h4>
+            <p>Selangor, Malaysia<br><span style="font-size:0.82rem;color:rgba(255,255,255,0.4)">[Update with full address]</span></p>
+          </div>
+        </div>
+        <div class="ci-item">
+          <div class="ci-icon-wrap">🕐</div>
+          <div>
+            <h4>Check-in / Check-out</h4>
+            <p>Check-in: 3:00 PM<br>Check-out: 12:00 PM</p>
+          </div>
+        </div>
+
+        <a href="https://wa.me/601XXXXXXXX?text=Hi!%20I'm%20interested%20in%20booking%20Hiyswa%20Jambu%20Homestay." target="_blank" class="wabox">
+          <div class="wabox-icon">💬</div>
+          <div>
+            <h4>WhatsApp Us</h4>
+            <p>Chat with us directly for the fastest response and instant booking confirmation</p>
+          </div>
+        </a>
+
+        <div>
+          <p style="font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:14px">Follow Us</p>
+          <div class="social-links">
+            <a href="#" class="social-link">📸 Instagram</a>
+            <a href="#" class="social-link">👍 Facebook</a>
+            <a href="#" class="social-link">🎵 TikTok</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ════════════ FOOTER ════════════ -->
+<footer id="mainFooter">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo">Hiyswa Jambu <span>Homestay</span></div>
+        <p>A tropical haven where families escape, explore, and create memories that last a lifetime. Book your stay today.</p>
+      </div>
+      <div class="footer-links">
+        <h5>Pages</h5>
+        <ul>
+          <li><a href="#" onclick="navigateTo('home')">Home</a></li>
+          <li><a href="#" onclick="navigateTo('about')">About Us</a></li>
+          <li><a href="#" onclick="navigateTo('facilities')">Facilities</a></li>
+          <li><a href="#" onclick="navigateTo('rooms')">Rooms & Rates</a></li>
+          <li><a href="#" onclick="navigateTo('gallery')">Gallery</a></li>
+          <li><a href="#" onclick="navigateTo('location')">Location</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h5>Facilities</h5>
+        <ul>
+          <li><a href="#">Swimming Pool</a></li>
+          <li><a href="#">Mini Water Park</a></li>
+          <li><a href="#">Futsal Court</a></li>
+          <li><a href="#">BBQ Place</a></li>
+          <li><a href="#">Bicycle Rental</a></li>
+          <li><a href="#">Event Space</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 <span>Hiyswa Jambu Homestay</span>. All Rights Reserved.</p>
+      <p>Made with <span>♥</span> in Selangor, Malaysia</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ─── LOADER ───────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hide');
+    initParticles();
+    runCounters();
+  }, 1200);
+});
+
+// ─── PARTICLES ────────────────────────────────────────────────────────────────
+function initParticles() {
+  const container = document.getElementById('particles');
+  if (!container) return;
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left: ${Math.random()*100}%;
+      top: ${Math.random()*100}%;
+      --dur: ${3 + Math.random()*4}s;
+      --del: ${Math.random()*5}s;
+      width: ${2+Math.random()*3}px;
+      height: ${2+Math.random()*3}px;
+    `;
+    container.appendChild(p);
+  }
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+let currentPage = 'home';
+const overlay = document.getElementById('pageTransition');
+
+function navigateTo(page) {
+  if (page === currentPage) return;
+  const links = document.querySelectorAll('.nav-links a');
+  links.forEach(l => l.classList.remove('active'));
+  const target = document.querySelector(`[data-page="${page}"]`);
+  if (target) target.classList.add('active');
+
+  overlay.classList.add('entering');
+  setTimeout(() => {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const nextPage = document.getElementById('page-' + page);
+    if (nextPage) {
+      nextPage.classList.add('active');
+      nextPage.style.opacity = '0';
+      setTimeout(() => { nextPage.style.opacity = '1'; }, 50);
+    }
+    currentPage = page;
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    overlay.classList.remove('entering');
+    // Re-run scroll animations for new page
+    setTimeout(initReveal, 100);
+    if (page === 'home') runCounters();
+  }, 500);
+
+  // Close mobile menu
+  document.getElementById('navLinks').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  return false;
+}
+
+// ─── MOBILE NAV ───────────────────────────────────────────────────────────────
+function toggleMobileNav() {
+  const nav = document.getElementById('navLinks');
+  const burger = document.getElementById('hamburger');
+  nav.classList.toggle('open');
+  burger.classList.toggle('open');
+}
+
+// ─── NAVBAR SCROLL ────────────────────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const navbar = document.getElementById('navbar');
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ─── SCROLL REVEAL ────────────────────────────────────────────────────────────
+function initReveal() {
+  const reveals = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initReveal();
+  // Set active nav
+  document.querySelector('[data-page="home"]').classList.add('active');
+});
+
+// ─── COUNTERS ─────────────────────────────────────────────────────────────────
+function runCounters() {
+  const counters = document.querySelectorAll('[data-count]');
+  counters.forEach(counter => {
+    const target = parseInt(counter.dataset.count);
+    const duration = 1800;
+    const step = target / (duration / 16);
+    let current = 0;
+    const timer = setInterval(() => {
+      current += step;
+      if (current >= target) { current = target; clearInterval(timer); }
+      counter.textContent = Math.floor(current) + (target === 5 ? '★' : target === 24 ? '/7' : '+');
+    }, 16);
+  });
+}
+
+// ─── VIDEO ────────────────────────────────────────────────────────────────────
+function playVideo() {
+  const thumb = document.getElementById('videoThumb');
+  const iframe = document.getElementById('videoIframe');
+  thumb.style.display = 'none';
+  iframe.style.display = 'block';
+  // If using <video> tag instead of iframe, call: document.getElementById('videoIframe').play();
+}
+
+// ─── GALLERY FILTER ───────────────────────────────────────────────────────────
+function filterGallery(category, btn) {
+  document.querySelectorAll('.gf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const items = document.querySelectorAll('.gallery-item');
+  items.forEach(item => {
+    if (category === 'all' || item.dataset.category === category) {
+      item.classList.remove('hidden');
+    } else {
+      item.classList.add('hidden');
+    }
+  });
+}
+
+// ─── LIGHTBOX ─────────────────────────────────────────────────────────────────
+function openLightbox(el, title, sub) {
+  const photo = el.querySelector('.gallery-photo').cloneNode(true);
+  photo.style.minHeight = '400px';
+  const content = document.getElementById('lightboxContent');
+  content.innerHTML = '';
+  content.appendChild(photo);
+  document.getElementById('lightboxTitle').textContent = title;
+  document.getElementById('lightboxSub').textContent = sub.toUpperCase();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(e) {
+  if (e.target === document.getElementById('lightbox')) closeLightboxBtn();
+}
+function closeLightboxBtn() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Escape key to close lightbox
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightboxBtn();
+});
+
+// ─── FORM SUBMIT ──────────────────────────────────────────────────────────────
+function submitForm() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 4000);
+}
+</script>
+</body>
+</html>
